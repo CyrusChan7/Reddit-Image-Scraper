@@ -8,6 +8,7 @@ import pickle
 from utils.create_pickle_token import create_pickle_token
 
 
+#If reddit.token does NOT exist, then help the user create it
 def load_token():
     if os.path.exists("reddit.token"):
         with open("reddit.token", "rb") as token:
@@ -17,6 +18,7 @@ def load_token():
         credentials = create_pickle_token()
         pickle_out_file = open("reddit.token","wb")
         pickle.dump(credentials, pickle_out_file)
+        load_token()
 
 
 def initialize_scraper():
@@ -31,7 +33,7 @@ def initialize_scraper():
 reddit_credentials = load_token()
 post_search_count = initialize_scraper()
 
-
+# From official documentation
 reddit = praw.Reddit(client_id=reddit_credentials["client_id"],
                          client_secret=reddit_credentials["client_secret"],
                          user_agent=reddit_credentials["user_agent"],
@@ -39,6 +41,7 @@ reddit = praw.Reddit(client_id=reddit_credentials["client_id"],
                          password=reddit_credentials["password"])
 
 
+# Search as many subreddits as the user wants, one subreddit per line
 spreadsheet = open("subreddits.csv", "r")
 for sub in spreadsheet:
 
@@ -47,9 +50,11 @@ for sub in spreadsheet:
     count = 0
     for submission in subreddit.hot(limit=post_search_count):
         if "jpg" in submission.url.lower() or "png" in submission.url.lower():
+
+            # Save image
             response = requests.get(submission.url.lower(), stream=True).raw
             image = np.asarray(bytearray(response.read()), dtype="uint8")
             image = cv2.imdecode(image, cv2.IMREAD_COLOR)
-
             cv2.imwrite(f"images/{sub}-{submission.id}.png", image)
+            
             count += 1
