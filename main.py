@@ -4,21 +4,26 @@ import cv2
 import numpy as np
 import os
 import pickle
+import sys
+import time
 
 from utils.create_pickle_token import create_pickle_token
 
 
 #If reddit.token does NOT exist, then help the user create it
 def load_token():
-    if os.path.exists("reddit.token"):
-        with open("reddit.token", "rb") as token:
+    TOKEN_FILE_NAME = "reddit.token"
+    if os.path.exists(TOKEN_FILE_NAME):
+        with open(TOKEN_FILE_NAME, "rb") as token:
             credentials = pickle.load(token)
             return credentials
     else:
         credentials = create_pickle_token()
-        pickle_out_file = open("reddit.token","wb")
+        pickle_out_file = open(TOKEN_FILE_NAME, "wb")
         pickle.dump(credentials, pickle_out_file)
-        load_token()
+        print(f"{TOKEN_FILE_NAME} has been generated successfully, please restart the program to continue. Exiting automatically in 10 seconds.")
+        time.sleep(10)
+        sys.exit()
 
 
 def initialize_scraper():
@@ -58,3 +63,4 @@ for sub in spreadsheet:
             cv2.imwrite(f"images/{sub}-{submission.id}.png", image)
             
             count += 1
+print("Scraping has finished successfully.")
