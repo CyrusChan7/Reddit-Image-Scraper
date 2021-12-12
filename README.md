@@ -1,6 +1,8 @@
 ### A way to quickly gather images for use in a multipurpose data set.
   
-<br/>
+<br/>  
+  
+![Reddit Image Scraper demo](demo/demo.gif)
 
 #### **Disclaimer:** The original author(s) retains copyright over their images.
 I am NOT responsible for what you do with this script.
