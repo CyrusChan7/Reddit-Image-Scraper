@@ -31,7 +31,7 @@ def initialize_scraper():
     #print(f"DEBUG: dir_path is {dir_path}")
     os.chdir(dir_path)
 
-    user_search_count = int(input("How many posts would you like to search? (Enter a number): "))
+    user_search_count = int(input(f"How many images to download? (If you specify 50, there may only be 35 images downloaded, because not every post contains an image): "))
     return user_search_count
 
 
@@ -52,15 +52,19 @@ for sub in spreadsheet:
 
     subreddit = reddit.subreddit(sub.strip())
     print(f"Begin scraping subreddit: {sub.strip()}")
+
     count = 0
     for submission in subreddit.hot(limit=post_search_count):
-        if "jpg" in submission.url.lower() or "png" in submission.url.lower():
+        picture_formats = ["jpg", "jpeg", "png"]
+        post_string = submission.url.lower()
+
+        if any(pic in post_string for pic in picture_formats):
 
             # Save image
             response = requests.get(submission.url.lower(), stream=True).raw
             image = np.asarray(bytearray(response.read()), dtype="uint8")
             image = cv2.imdecode(image, cv2.IMREAD_COLOR)
             cv2.imwrite(f"images/{sub}-{submission.id}.png", image)
-            
+                
             count += 1
 print("Scraping has finished successfully.")
