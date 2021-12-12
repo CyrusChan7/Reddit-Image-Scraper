@@ -6,6 +6,7 @@ import os
 import pickle
 import sys
 import time
+from tqdm import tqdm
 
 from utils.create_pickle_token import create_pickle_token
 
@@ -51,10 +52,10 @@ spreadsheet = open("subreddits.csv", "r")
 for sub in spreadsheet:
 
     subreddit = reddit.subreddit(sub.strip())
-    print(f"Begin scraping subreddit: {sub.strip()}")
+    print(f"Begin scraping subreddit: {sub.strip()}\n")
 
     count = 0
-    for submission in subreddit.hot(limit=post_search_count):
+    for submission in tqdm(subreddit.hot(limit=post_search_count)):
         picture_formats = ["jpg", "jpeg", "png"]
         post_string = submission.url.lower()
 
@@ -67,4 +68,4 @@ for sub in spreadsheet:
             cv2.imwrite(f"images/{sub}-{submission.id}.png", image)
                 
             count += 1
-print("Scraping has finished successfully.")
+print("\nScraping has finished successfully.")
